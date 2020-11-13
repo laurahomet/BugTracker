@@ -4,7 +4,6 @@
 # Description: Ticket Model for BugTracker V1.0
 # Additional Comments: None
 #------------------------------------------------------
-import database as db
 import sqlite3_db as sdb
 import datetime
 
