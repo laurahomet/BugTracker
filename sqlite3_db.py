@@ -1,12 +1,12 @@
 import sqlite3
+import constants as C
 
-indexDict = {'title' 		: 1,
-			 'description' 	: 2,
-			 'submitter' 	: 3,
-			 'assignee' 	: 4,
-			 'priority' 	: 5,
-			 'status' 		: 6}
-
+# indexDict = {'title' 		: 1,
+# 			 'description' 	: 2,
+# 			 'submitter' 	: 3,
+# 			 'assignee' 	: 4,
+# 			 'priority' 	: 5,
+# 			 'status' 		: 6}
 
 def connect_to_db(database=None):
 	if database is None:
@@ -25,6 +25,7 @@ def disconnect_from_db(conn=None):
 def create_table(conn):
 	try:
 		conn.execute('''CREATE TABLE tickets (
+        								id integer,
         								title text,
         								description text,
         								submitter text,
@@ -34,14 +35,17 @@ def create_table(conn):
         								status text
         								)
         							''')
-	except OperationalError as e:
-		print(e)
+	except:
+		pass
+	#except OperationalError as e:
+	#	print(e)
 
 
 def create_ticket(conn,ticket):
 	with conn: # No need for conn.commit()
-		conn.execute("INSERT INTO tickets VALUES (?,?,?,?,?,?,?)", 
-												(ticket.title,
+		conn.execute("INSERT INTO tickets VALUES (?,?,?,?,?,?,?,?)", 
+												(ticket.id,
+												ticket.title,
 												ticket.description,
 												ticket.submitter,
 												ticket.assignee,
@@ -49,31 +53,32 @@ def create_ticket(conn,ticket):
 												ticket.created,
 												ticket.status))
 
-def read_ticket(conn,title):
-	c = conn.execute("SELECT * FROM tickets WHERE title=?",(title,))
+def read_ticket(conn,ID):
+	c = conn.execute("SELECT * FROM tickets WHERE id=?",(ID,))
 	return c.fetchone()
 
 def read_tickets(conn):
 	c = conn.execute("SELECT * FROM tickets")
 	return c.fetchall()
 
-def update_ticket(conn,title,updateIndex,updateData):
+def update_ticket(conn,ID,updateIndex,updateData):
 	with conn:
-		if updateIndex==indexDict['title']:
-			conn.execute("UPDATE tickets SET title=? WHERE title=?",(updateData,title))
-		elif updateIndex==indexDict['description']:
-			conn.execute("UPDATE tickets SET description=? WHERE title=?",(updateData,title))
-		elif updateIndex==indexDict['submitter']:
-			conn.execute("UPDATE tickets SET submitter=? WHERE title=?",(updateData,title))
-		elif updateIndex==indexDict['assignee']:
-			conn.execute("UPDATE tickets SET assignee=? WHERE title=?",(updateData,title))
-		elif updateIndex==indexDict['priority']:
-			conn.execute("UPDATE tickets SET priority=? WHERE title=?",(updateData,title))
-		elif updateIndex==indexDict['status']:
-			conn.execute("UPDATE tickets SET status=? WHERE title=?",(updateData,title))
+		if updateIndex==C.ticket_indexes['title']:
+			conn.execute("UPDATE tickets SET title=? WHERE id=?",(updateData,ID))
+		elif updateIndex==C.ticket_indexes['description']:
+			conn.execute("UPDATE tickets SET description=? WHERE id=?",(updateData,ID))
+		# elif updateIndex==C.ticket_indexes['submitter']:
+		# 	conn.execute("UPDATE tickets SET submitter=? WHERE id=?",(updateData,ID))
+		elif updateIndex==C.ticket_indexes['assignee']:
+			conn.execute("UPDATE tickets SET assignee=? WHERE id=?",(updateData,ID))
+		elif updateIndex==C.ticket_indexes['priority']:
+			conn.execute("UPDATE tickets SET priority=? WHERE id=?",(updateData,ID))
+		elif updateIndex==C.ticket_indexes['status']:
+			conn.execute("UPDATE tickets SET status=? WHERE id=?",(updateData,ID))
 
 
-def delete_ticket(conn,title):
+def delete_ticket(conn,ID):
+	print(f'deleting {ID}')
 	with conn:
-		conn.execute("DELETE from tickets WHERE title=?",(title,))
+		conn.execute("DELETE from tickets WHERE id=?",(ID,))
 

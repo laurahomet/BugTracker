@@ -1,40 +1,47 @@
 #------------------------------------------------------
 # Author: Laura Homet Garcia
 # Date: 10/16/2020
-# Description: Ticket View for BugTracker V1.0
+# Description: Ticket View for BugTracker V2.0
 # Additional Comments: None
 #------------------------------------------------------
+import ticketModel as tm
+import ticketView as tv
 
 class TicketController(object):
 	
-	def __init__(self, model, view):
-		self.model = model
-		self.view = view
+	def __init__(self):
+		self.model = tm.TicketModel()
+		self.view = tv.TicketView(self)
+
+	def main(self):
+		self.view.main()
 
 	def show_ticket_list(self):
-		tickets = self.model.read_tickets()
-		self.view.show_ticket_list(tickets)
+		return self.model.read_tickets()
 
-	def show_ticket(self,title):
+	def show_ticket(self,ID):
 		try:
-			ticket = self.model.read_ticket(title)
-			self.view.show_ticket(ticket)
+			ticket = self.model.read_ticket(ID)
+			return ticket
 		except:
-			self.view.display_missing_ticket(title)
+			print('No ticket with this ID')
 
 	def insert_ticket(self,ticket):
 		try:
 			self.model.create_ticket(ticket)
-			self.view.display_ticket_stored(ticket.title)
 		except:
-			self.view.display_ticket_already_stored(ticket.title)
+			print('Ticket already stored')
+		self.view.update_ticket_list()
 
 	def update_ticket(self,title,index,newVal):
 		self.model.update_ticket(title,index,newVal)
-		self.view.display_ticket_updated(title,newVal)
+		self.view.update_ticket_list()
 
-	def delete_ticket(self,title):
-		self.model.delete_ticket(title)
-		self.view.display_ticket_deleted(title)
+	def delete_ticket(self,ID):
+		self.model.delete_ticket(ID)
+		self.view.update_ticket_list()
 
 
+if __name__== "__main__":
+	tc = TicketController()
+	tc.main()
